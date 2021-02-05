@@ -10,24 +10,24 @@ output_string=input_bytes_encoded.decode()
 print(type(output_string))
 print(output_string)
 
-import socket
+import socket     #importo la libreria socket
 
-SERVER_ADDRESS = '127.0.0.1'
+SERVER_ADDRESS = '127.0.0.1'   
 SERVER_PORT = 22224
 
-sock_service = socket.socket()
+sock_service = socket.socket()  #socket di servizio
 
-sock_service.connect((SERVER_ADDRESS, SERVER_PORT))
+sock_service.connect((SERVER_ADDRESS, SERVER_PORT))  #socket 
 
 print("Connesso a " + str((SERVER_ADDRESS, SERVER_PORT)))
 while True:
     try:
-        dati = input("Inserisci i dati da inviare (0 per terminare la connessione): ")
+        dati = input("Inserisci i dati da inviare (0 per terminare la connessione): ")    #utente inserisce il numero di richieste
     except EOFError:
         print("\nOkay. Exit")
         break
     if not dati:
-        print("Non puoi inviare una stringa vuota!")
+        print("Non puoi inviare una stringa vuota!") #controllo stringa
         continue
     if dati == '0':
         print("Chiudo la connessione con il server!")
