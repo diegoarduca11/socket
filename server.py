@@ -19,7 +19,7 @@ print("Server in ascolto su %s." % str((SERVER_ADDRESS, SERVER_PORT)))
 
 
 while True:
-    sock_service, addr_client = sock_listen.accept()
+    sock_service, addr_client = sock_listen.accept() #la sock-list accept accetta le richieste di connessione e restituisce 2 indirizzi: di chi si è collegato e quello del socket per erogare il servizio 
     print("\nConnessione ricevuta da " + str(addr_client))
     print("\nAspetto di ricevere i dati ")
     contConn=0

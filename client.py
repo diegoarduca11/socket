@@ -17,7 +17,7 @@ SERVER_PORT = 22224
 
 sock_service = socket.socket()  #socket di servizio
 
-sock_service.connect((SERVER_ADDRESS, SERVER_PORT))  #socket 
+sock_service.connect((SERVER_ADDRESS, SERVER_PORT))  #la socket service riceve i dati che invia il cliente.L'accettazione è su 2 porte differenti
 
 print("Connesso a " + str((SERVER_ADDRESS, SERVER_PORT)))
 while True:
