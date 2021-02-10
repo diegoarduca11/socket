@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 import socket
-
-
 
 SERVER_ADDRESS = '127.0.0.1'
 
@@ -19,7 +16,7 @@ print("Server in ascolto su %s." % str((SERVER_ADDRESS, SERVER_PORT)))
 
 
 while True:
-    sock_service, addr_client = sock_listen.accept() #la sock-list accept accetta le richieste di connessione e restituisce 2 indirizzi: di chi si è collegato e quello del socket per erogare il servizio 
+    sock_service, addr_client = sock_listen.accept()
     print("\nConnessione ricevuta da " + str(addr_client))
     print("\nAspetto di ricevere i dati ")
     contConn=0
@@ -35,10 +32,32 @@ while True:
         if dati=='0':
             print("Chiudo la connessione con " + str(addr_client))
             break
-        dati = "Risposta a : " + str(addr_client) + ". Il valore del contatore è : " + str(contConn)
+        
+        #piu;1;4 e il server deve fare la somma e darmi il risultato
+        #uso il metodo split 
+        dati=dati.split(";")  #piu;1;4 -> [piu][1][4]  diventa un array
+        risposta="" #dopo andremo a scrivere una risposta 
+        if dati[0]== "piu" or dati[0]== "meno" or dati[0]== "diviso" or dati[0]== "per":
+            dati[1]=int(dati[1]) #casting string a int
+            dati[2]=int(dati[2]) #""
+            risultato=0 
+            if dati[0]=="piu":
+                risultato=dati[1]+dati[2]
 
-        dati = dati.encode()
+            elif dati[0]=="meno":
+                risultato=dati[1]-dati[2]
 
-        sock_service.send(dati)
+            elif dati[0]=="diviso":
+                risultato=dati[1]/dati[2]
+
+            else:
+                risultato=dati[1]*dati[2]  
+            risposta="il risultato dell'operazione "+str(dati[0])+ " tra "+ str(dati[1])+" e " + str(dati[2]) +" = "+str(risultato)
+        else:
+            risposta= "operazione non valida"
+
+        risposta = risposta.encode()
+
+        sock_service.send(risposta)
 
     sock_service.close()
