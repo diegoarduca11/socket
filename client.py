@@ -1,51 +1,53 @@
-#!/usr/bin/env python3
+##!/usr/bin/env python3
+import socket
 
 
-input_string = 'Hello'
-print(type(input_string))
-input_bytes_encoded = input_string.encode()
-print(type(input_bytes_encoded))
-print(input_bytes_encoded)
-output_string=input_bytes_encoded.decode()
-print(type(output_string))
-print(output_string)
-
-import socket     #importo la libreria socket
-
-SERVER_ADDRESS = '127.0.0.1'   
+#è indifferente riempire questo campo o no
+SERVER_ADDRESS = '127.0.0.1'
+#numero porta, obbligatoriamente > 1024 perché le altre sono private
 SERVER_PORT = 22224
 
-sock_service = socket.socket()  #socket di servizio
+def ricevi_comandi(sock_listen):
+    while True:
+        sock_service, addr_client = sock_listen.accept()
+        print("\nConnessione ricevuta da " + str(addr_client))
+        print("\nAspetto di ricevere i dati ")
+        contConn=0
+        while True:
+            dati = sock_service.recv(2048)
+            contConn+=1
+            if not dati:#se non riceve dati chiude la connessione
+                print("Fine dati dal client. Reset")
+                break
+            
+            dati = dati.decode()
+            print("Ricevuto: '%s'" % dati)
+            if dati=='ko':#se riceve ko chiude la connessione
+                print("Chiudo la connessione con " + str(addr_client))
+                break
+            operazione, primo, secondo = dati.split(";")#.split
+            #Vari if per selezionare l'operazione che il client ha inserito
+            if operazione == "piu":
+                risultato = int(primo) + int(secondo)
+            if operazione == "meno":
+                risultato = int(primo) - int(secondo)
+            if operazione == "per":
+                risultato = int(primo) * int(secondo)
+            if operazione == "diviso":
+                risultato = int(primo) / int(secondo)
+            
+            dati = "Il risultato dell'operazione: "+operazione +" tra "+primo+" e "+secondo+" è: "+str(risultato)#output
+            dati = dati.encode()
+            sock_service.send(dati)
+        sock_service.close()
 
-sock_service.connect((SERVER_ADDRESS, SERVER_PORT))  #la socket service riceve i dati che invia il cliente.L'accettazione è su 2 porte differenti
+def avvia_server(address, port):
+    sock_listen = socket.socket()
+    sock_listen.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock_listen.bind((address, port))
+    sock_listen.listen(5)#consente un massimo di 5 client in coda
+    print("Server in ascolto su %s." % str((address, port)))
+    ricevi_comandi(sock_listen)
 
-print("Connesso a " + str((SERVER_ADDRESS, SERVER_PORT)))
-while True:
-    try:
-        dati = input("Inserisci i dati da inviare (0 per terminare la connessione): ")    #utente inserisce il numero di richieste
-    except EOFError:
-        print("\nOkay. Exit")
-        break
-    if not dati:
-        print("Non puoi inviare una stringa vuota!") #controllo stringa
-        continue
-    if dati == '0':
-        print("Chiudo la connessione con il server!")
-        break
-    
-    dati = dati.encode()
-
-    sock_service.send(dati)
-
-    dati = sock_service.recv(2048)
-
-    if not dati:
-        print("Server non risponde. Exit")
-        break
-    
-    dati = dati.decode()
-
-    print("Ricevuto dal server:")
-    print(dati + '\n')
-
-sock_service.close()
+if __name__ == '_main_':
+    avvia_server(SERVER_ADDRESS, SERVER_PORT)
