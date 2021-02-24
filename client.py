@@ -1,53 +1,61 @@
-##!/usr/bin/env python3
+
+
+#!/usr/bin/env python3
+
+
+#input_string = 'Hello'
+#print(type(input_string))
+#input_bytes_encoded = input_string.encode()
+#print(type(input_bytes_encoded))
+#print(input_bytes_encoded)
+#output_string=input_bytes_encoded.decode()
+#print(type(output_string))
+#print(output_string)
+
 import socket
-
-
-#è indifferente riempire questo campo o no
+from threading import Thread
 SERVER_ADDRESS = '127.0.0.1'
-#numero porta, obbligatoriamente > 1024 perché le altre sono private
-SERVER_PORT = 22224
+SERVER_PORT = 22225
 
-def ricevi_comandi(sock_listen):
+#La funzione riceve la socket connessa al server e la utilizza per richiedere il servizio
+def invia_comandi(sock_service):
     while True:
-        sock_service, addr_client = sock_listen.accept()
-        print("\nConnessione ricevuta da " + str(addr_client))
-        print("\nAspetto di ricevere i dati ")
-        contConn=0
-        while True:
-            dati = sock_service.recv(2048)
-            contConn+=1
-            if not dati:#se non riceve dati chiude la connessione
-                print("Fine dati dal client. Reset")
-                break
-            
-            dati = dati.decode()
-            print("Ricevuto: '%s'" % dati)
-            if dati=='ko':#se riceve ko chiude la connessione
-                print("Chiudo la connessione con " + str(addr_client))
-                break
-            operazione, primo, secondo = dati.split(";")#.split
-            #Vari if per selezionare l'operazione che il client ha inserito
-            if operazione == "piu":
-                risultato = int(primo) + int(secondo)
-            if operazione == "meno":
-                risultato = int(primo) - int(secondo)
-            if operazione == "per":
-                risultato = int(primo) * int(secondo)
-            if operazione == "diviso":
-                risultato = int(primo) / int(secondo)
-            
-            dati = "Il risultato dell'operazione: "+operazione +" tra "+primo+" e "+secondo+" è: "+str(risultato)#output
-            dati = dati.encode()
-            sock_service.send(dati)
-        sock_service.close()
+        try: #try per evitare vari possibili errori
+            dati = input("Inserisci i dati da inviare (ko per terminare la connessione): ")#inserimento dati in caso non trova errori
+        except EOFError: #se c'è un errore
+            print("\nOkay. Exit")# stampa questo 
+            break #chiusura
+        if not dati:# se non vengono insierriti dati 
+            print("Non puoi inviare una stringa vuota!")# meaasggio
+            continue# non chiude il ciclo ma lo continua comunque
+        if dati == 'ko':#se viene inserito ko
+            print("Chiudo la connessione con il server!")#il server si chiude
+            break#chiusura
+    
+        dati = dati.encode() #.encode trasforma la stringa in byte
+        sock_service.send(dati) #.send inivia a dati 
+        dati = sock_service.recv(2048) #.recv riceve i dati
 
-def avvia_server(address, port):
-    sock_listen = socket.socket()
-    sock_listen.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock_listen.bind((address, port))
-    sock_listen.listen(5)#consente un massimo di 5 client in coda
-    print("Server in ascolto su %s." % str((address, port)))
-    ricevi_comandi(sock_listen)
+        if not dati:
+            print("Server non risponde. Exit")
+            break
+        
+        dati = dati.decode()
 
+        print("Ricevuto dal server:")
+        print(dati + '\n')
+    sock_service.close()
+        
+
+#la funzionme crea una socket(s) per la connessione con il server e la passa alla funzione invia_comandi(s)
+def connessione_server(address, port):
+    sock_service = socket.socket()
+    sock_service.connect((address, port))
+    print("Connesso a " + str((address, port)))
+    invia_comandi(sock_service)
+    
+
+#Questo comando serve per far capire al codice se è stato eseguito come singolo script o se è stato chiamato come modulo da qualche altro
+#programma per usare le sue funzioni o classi
 if __name__ == '__main__':
-    avvia_server(SERVER_ADDRESS, SERVER_PORT)
+    connessione_server(SERVER_ADDRESS, SERVER_PORT)
