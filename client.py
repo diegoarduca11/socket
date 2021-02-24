@@ -49,5 +49,5 @@ def avvia_server(address, port):
     print("Server in ascolto su %s." % str((address, port)))
     ricevi_comandi(sock_listen)
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     avvia_server(SERVER_ADDRESS, SERVER_PORT)
