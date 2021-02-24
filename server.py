@@ -11,13 +11,12 @@
 #print(output_string)
 
 import socket
-import sys
-
+from threading import Thread
 SERVER_ADDRESS = '127.0.0.1'
 SERVER_PORT = 22224
 
 #La funzione riceve la socket connessa al server e la utilizza per richiedere il servizio
-def invia_comandi(sock_service):
+def _comandi(sock_service):
     while True:
         try: #try per evitare vari possibili errori
             dati = input("Inserisci i dati da inviare (ko per terminare la connessione): ")#inserimento dati in caso non trova errori
