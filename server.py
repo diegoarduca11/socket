@@ -23,22 +23,27 @@ while True:
     print("\nConnessione ricevuta da " + str(addr_client))
     print("\nAspetto di ricevere i dati ")
     step=0
-    while True:
-        dati = sock_service.recv(2048)
-        contConn+=1
-        if not dati:
-            print("Fine dati dal client. Reset")
-            break
-        
-        dati = dati.decode()
-        print("Ricevuto: '%s'" % dati)
-        if dati=='0':
-            print("Chiudo la connessione con " + str(addr_client))
-            break
-        dati = "Risposta a : " + str(addr_client) + ". Il valore del contatore è : " + str(contConn)
+    while True: 
 
-        dati = dati.encode()
+        sock_service, addr_client = sock_listen.accept()
+        print("\nConnessione ricevuta da " + str(addr_client)) #finché la connesione esiste allora il server rimane in attes adi ricevere i dati 
+        print("\nAspetto di ricevere i dati ")
+        contConn=0
+        while True:
+            dati = sock_service.recv(2048) #riceve i dati
+            contConn+=1
+            if not dati:
+                print("Fine dati dal client. Reset")
+                break
+            
+            dati = dati.decode()
+            print("Ricevuto: '%s'" % dati)
+            if dati=='0':
+                print("Chiudo la connessione con " + str(addr_client)) #se non riceviamo i dati la connnesione viene chiusa 
+                break
+            dati = "Risposta a : " + str(addr_client) + ". Il valore del contatore è : " + str(contConn) #stampiamo alla fine i dati che ci sono arrivati
 
-        sock_service.send(dati)
+            dati = dati.encode()
 
+            sock_service.send(dati)
     sock_service.close()
