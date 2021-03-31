@@ -14,21 +14,21 @@ protocollo = ["SYN", "SYN ACK","ACK with Data","ACK for Data"]
 step=0
 dati = str(step)
 while True:
-   try:
-        dati = input("Inserisci i dati da inviare (0 per terminare la connessione): ") #richiesta di un input 
-    except EOFError:
-        print("\nOkay. Exit")
-        break
-    if not dati:
-        print("Non puoi inviare una stringa vuota!") #controllo
-        continue
-    if dati == '0':
-        print("Chiudo la connessione con il server!") #chiusura del server
-        break
-    
-    dati = dati.encode()
-
-    sock_service.send(dati)
-
-    dati = sock_service.recv(2048)
+   dati = dati.endcode()
+   sock_service.send(dati)
+   print("Invio: "+ str(step)+ " - " + protocollo[step])
+   dati = sock_service.recv(2048)
+   if not dati:
+      print("Server non risponde. Exit")
+      break
+   dati=dati.decode()
+   if dati == '3':
+      print("ricevuto: "+dati+ " - " +protocollo[int(dati)])
+      print("Termino connessione")
+      break
+   else:
+      step = int(dati)
+      print("ricevuto: "+str(step)+ " - " +protocollo[step])
+       dati:str
+      dati = str(step)
 sock_service.close()
