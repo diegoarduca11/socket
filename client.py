@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
 
-
-input_string = 'Hello'
-print(type(input_string))
-input_bytes_encoded = input_string.encode()
-print(type(input_bytes_encoded))
-print(input_bytes_encoded)
-output_string=input_bytes_encoded.decode()
-print(type(output_string))
-print(output_string)
-
 import socket     #importo la libreria socket
 
 SERVER_ADDRESS = '127.0.0.1'   
@@ -19,7 +9,10 @@ sock_service = socket.socket()  #socket di servizio
 
 sock_service.connect((SERVER_ADDRESS, SERVER_PORT))  #la socket service riceve i dati che invia il cliente.L'accettazione è su 2 porte differenti
 
-print("Connesso a " + str((SERVER_ADDRESS, SERVER_PORT)))
+print("Client connesso a  " + str((SERVER_ADDRESS, SERVER_PORT)))
+protocollo = ["SYN", "SYN ACK","ACK with Data","ACK for Data"]
+step=0
+dati = str(step)
 while True:
     try:
         dati = input("Inserisci i dati da inviare (0 per terminare la connessione): ")    #utente inserisce il numero di richieste
